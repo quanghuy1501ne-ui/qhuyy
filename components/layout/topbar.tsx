@@ -1,49 +1,66 @@
 'use client';
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { LogIn, UserPlus, LogOut } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { Sun, Moon } from 'lucide-react';
 
 export default function Topbar() {
-  const router = useRouter();
-  const [user, setUser] = useState<{ name: string; role: string } | null>(null);
+  const [isLight, setIsLight] = useState(false);
+  const [userName, setUserName] = useState('Quang Huy');
+  const [userRole, setUserRole] = useState('ADMIN');
 
   useEffect(() => {
-    const loggedInUser = localStorage.getItem('qhuyy_user');
-    if (loggedInUser) {
-      setUser(JSON.parse(loggedInUser));
+    const savedTheme = localStorage.getItem('qhuyy_theme');
+    if (savedTheme === 'light') {
+      setIsLight(true);
+      document.documentElement.classList.add('light');
     }
+
+    const user = JSON.parse(localStorage.getItem('qhuyy_user') || '{}');
+    if (user.name) setUserName(user.name);
+    if (user.role) setUserRole(user.role.toUpperCase());
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('qhuyy_user');
-    setUser(null);
-    router.push('/login');
+  const toggleTheme = () => {
+    if (isLight) {
+      setIsLight(false);
+      localStorage.setItem('qhuyy_theme', 'dark');
+      document.documentElement.classList.remove('light');
+    } else {
+      setIsLight(true);
+      localStorage.setItem('qhuyy_theme', 'light');
+      document.documentElement.classList.add('light');
+    }
   };
 
   return (
-    <header className="h-16 flex items-center justify-end px-8 bg-[#09090b] sticky top-0 z-40">
-      <div className="flex items-center gap-3">
-        {user ? (
-          <div className="flex items-center gap-4">
-            <span className="text-sm font-medium text-zinc-300">
-              Chào, <strong className="text-white">{user.name}</strong>
-              {user.role === 'admin' && <span className="ml-2 text-xs bg-red-600 px-2 py-1 rounded">ADMIN</span>}
-            </span>
-            <button onClick={handleLogout} className="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition cursor-pointer">
-              <LogOut size={14} /> THOÁT
-            </button>
-          </div>
-        ) : (
-          <>
-            <Link href="/login" className="flex items-center gap-2 bg-transparent border border-zinc-700 hover:bg-zinc-800 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition">
-              <LogIn size={14} /> ĐĂNG NHẬP
-            </Link>
-            <Link href="/register" className="flex items-center gap-2 bg-white hover:bg-zinc-200 text-black text-xs font-semibold px-4 py-2.5 rounded-lg transition">
-              <UserPlus size={14} /> ĐĂNG KÝ
-            </Link>
-          </>
-        )}
+    <header className="h-16 border-b border-zinc-800 px-6 flex items-center justify-between bg-[inherit]">
+      <div className="text-sm text-zinc-400 font-medium">
+        Khu vực điều khiển hệ thống
+      </div>
+
+      <div className="flex items-center gap-4">
+        {/* Nút chuyển đổi Sáng / Tối ở góc trên */}
+        <button
+          onClick={toggleTheme}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-zinc-700 bg-zinc-800 hover:bg-zinc-700 text-xs font-medium text-white transition cursor-pointer shadow"
+          title="Chuyển đổi giao diện sáng/tối"
+        >
+          {isLight ? (
+            <>
+              <Moon size={14} className="text-blue-400" /> Tối
+            </>
+          ) : (
+            <>
+              <Sun size={14} className="text-yellow-400" /> Sáng
+            </>
+          )}
+        </button>
+
+        <div className="flex items-center gap-2 text-sm bg-zinc-900/60 border border-zinc-800 px-3 py-1.5 rounded-lg">
+          <span className="text-zinc-300">Chào, <strong className="text-white">{userName}</strong></span>
+          <span className="bg-red-600/20 text-red-500 text-[10px] px-2 py-0.5 rounded border border-red-900/50 font-bold uppercase tracking-wider">
+            {userRole}
+          </span>
+        </div>
       </div>
     </header>
   );
