@@ -20,15 +20,15 @@ export default function DownloadPage() {
       setIsAdmin(true);
     }
 
-    // Tải danh sách file từ localStorage, nếu chưa có thì dùng mặc định
+    // Tải danh sách file từ localStorage, nếu chưa có thì dùng danh sách mặc định
     const savedFiles = localStorage.getItem('qhuyy_downloads');
-    if (savedFiles) {
+    if (savedFiles && JSON.parse(savedFiles).length > 0) {
       setFiles(JSON.parse(savedFiles));
     } else {
       const defaultFiles = [
-        { id: 1, name: 'Bản Hack VIP - Phiên bản 1.0.4', size: '15 MB', url: 'https://example.com/file1.zip' },
-        { id: 2, name: 'Tool Bypass Anti-Cheat Mới Nhất', size: '8 MB', url: 'https://example.com/file2.zip' },
-        { id: 3, name: 'Tài liệu hướng dẫn cài đặt', size: '2 MB', url: 'https://example.com/file3.pdf' },
+        { id: 1, name: 'Bản Hack VIP - Phiên bản 1.0.4', size: '15 MB', url: '#' },
+        { id: 2, name: 'Tool Bypass Anti-Cheat Mới Nhất', size: '8 MB', url: '#' },
+        { id: 3, name: 'Tài liệu hướng dẫn cài đặt', size: '2 MB', url: '#' },
       ];
       setFiles(defaultFiles);
       localStorage.setItem('qhuyy_downloads', JSON.stringify(defaultFiles));
@@ -49,7 +49,7 @@ export default function DownloadPage() {
     }
   };
 
-  // 2. Mở form sửa (Đổi tên, url)
+  // 2. Mở form sửa
   const startEdit = (file: any) => {
     setEditingId(file.id);
     setFormData({ name: file.name, size: file.size, url: file.url });
@@ -70,7 +70,7 @@ export default function DownloadPage() {
   const handleAddFile = (e: React.FormEvent) => {
     e.preventDefault();
     const newFile = {
-      id: Date.now(), // Tạo ID ngẫu nhiên
+      id: Date.now(),
       ...formData
     };
     saveFiles([...files, newFile]);
@@ -95,7 +95,7 @@ export default function DownloadPage() {
         <main className="flex-1 p-8">
           <div className="max-w-4xl mx-auto space-y-6">
             
-            {/* Tiêu đề & Nút thêm file (Chỉ Admin) */}
+            {/* Tiêu đề & Nút thêm file */}
             <div className="bg-[#121214] border border-zinc-800 p-6 rounded-xl flex justify-between items-center">
               <div>
                 <h1 className="text-xl font-bold mb-1 flex items-center gap-3">
@@ -137,7 +137,6 @@ export default function DownloadPage() {
               {files.map((file) => (
                 <div key={file.id} className={`bg-[#121214] border ${editingId === file.id ? 'border-zinc-500' : 'border-zinc-800'} p-4 rounded-xl transition`}>
                   
-                  {/* --- HIỂN THỊ CHẾ ĐỘ SỬA FILE --- */}
                   {editingId === file.id ? (
                     <div className="space-y-3">
                       <div className="grid grid-cols-2 gap-3">
@@ -151,8 +150,6 @@ export default function DownloadPage() {
                       </div>
                     </div>
                   ) : (
-                    
-                    /* --- HIỂN THỊ CHẾ ĐỘ XEM BÌNH THƯỜNG --- */
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="p-3 bg-zinc-900 rounded-lg text-zinc-400">
@@ -165,7 +162,6 @@ export default function DownloadPage() {
                       </div>
                       
                       <div className="flex items-center gap-2">
-                        {/* Các nút công cụ dành riêng cho ADMIN */}
                         {isAdmin && (
                           <>
                             <button onClick={() => startEdit(file)} className="p-2.5 bg-zinc-800 hover:bg-blue-900 hover:text-blue-400 text-zinc-400 rounded-lg transition" title="Sửa file">
@@ -177,7 +173,6 @@ export default function DownloadPage() {
                           </>
                         )}
                         
-                        {/* Nút Tải về (Ai cũng thấy) */}
                         <button
                           onClick={() => handleDownload(file.name, file.url)}
                           className="flex items-center gap-2 bg-zinc-800 hover:bg-white hover:text-black text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition active:scale-95 cursor-pointer ml-2"
@@ -189,12 +184,6 @@ export default function DownloadPage() {
                   )}
                 </div>
               ))}
-              
-              {files.length === 0 && (
-                <div className="text-center py-10 text-sm text-zinc-500 border border-dashed border-zinc-800 rounded-xl">
-                  Hiện chưa có file nào trên hệ thống.
-                </div>
-              )}
             </div>
 
           </div>
