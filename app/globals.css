@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* --- GIAO DIỆN SÁNG (LIGHT THEME) --- */
 .light-theme {
   filter: invert(1) hue-rotate(180deg);
